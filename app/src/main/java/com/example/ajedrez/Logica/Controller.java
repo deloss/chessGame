@@ -2,6 +2,8 @@ package com.example.ajedrez.Logica;
 
 import android.util.Pair;
 
+import com.example.ajedrez.R;
+
 import java.util.ArrayList;
 
 public class Controller {
@@ -21,9 +23,6 @@ public class Controller {
         return tablero;
     }
 
-    public Tablero getTablero() {
-        return tablero;
-    }
 
     public boolean moverFicha(int posX, int posY, int movX, int movY) {
         Piece[][] posiciones = tablero.getPosiciones();
@@ -46,17 +45,6 @@ public class Controller {
     }
 
 
-    public boolean jugadorEnJaque() {
-        return turnPlayer.jaquePropio();
-    }
-
-    public boolean oponenteEnJaque() {
-        return oponente(turnPlayer).jaquePropio();
-    }
-
-    public boolean terminoJuego() {
-        return tablero.terminoJuego();
-    }
 
     public ArrayList<Pair<Integer, Integer>> movimientosPosiblesFicha(Piece piece) {
         ArrayList<Pair<Integer, Integer>> movPosibles = piece.movimientosPosibles();
@@ -85,5 +73,49 @@ public class Controller {
 
     public Player getTurnPlayer() {
         return turnPlayer;
+    }
+
+    public ArrayList<Integer> getImagenesFichasJugador() {
+        ArrayList<Integer> imagenes = new ArrayList<>();
+        if(turnPlayer.getColor() == 0) {
+            imagenes.add(new Integer(R.drawable.whiterook));
+            imagenes.add(new Integer(R.drawable.whiteknight));
+            imagenes.add(new Integer(R.drawable.whitealfil));
+            imagenes.add(new Integer(R.drawable.whitequeen));
+            imagenes.add(new Integer(R.drawable.whitepawn));
+        }else{
+            imagenes.add(new Integer(R.drawable.blackrook));
+            imagenes.add(new Integer(R.drawable.blackknight));
+            imagenes.add(new Integer(R.drawable.blackalfil));
+            imagenes.add(new Integer(R.drawable.blackqueen));
+            imagenes.add(new Integer(R.drawable.blackpawn));
+        }
+        return imagenes;
+    }
+
+    /*pieceType:
+        0 = rook
+        1 = knight
+        2 = alfil
+        3 = queen
+        4 = pawn
+    */
+    public void changePawn(Pawn pawn, int pieceType, Player player) {
+        Piece[][] posiciones = tablero.getPosiciones();
+        Piece piece;
+        if(pieceType == 0)
+            piece = new Rook(pawn.getX(), pawn.getY(), tablero, pawn.getColor());
+        else if(pieceType == 1)
+            piece = new Knight(pawn.getX(), pawn.getY(), tablero, pawn.getColor());
+        else if(pieceType == 2)
+            piece = new Alfil(pawn.getX(), pawn.getY(), tablero, pawn.getColor());
+        else if(pieceType == 3)
+            piece = new Queen(pawn.getX(), pawn.getY(), tablero, pawn.getColor());
+        else
+            piece = new Pawn(pawn.getX(), pawn.getY(), tablero, pawn.getColor());
+        piece.setPlayer(player);
+        player.piezaComida(pawn);
+        posiciones[piece.getX()][piece.getY()] = piece;
+        player.addPieza(piece);
     }
 }

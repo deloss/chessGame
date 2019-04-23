@@ -8,6 +8,7 @@ public class Player {
     private ArrayList<Piece> pieces;
     private int color;
     private King king;
+    private boolean posibleEnroque;
     private Tablero tablero;
     public Player(ArrayList<Piece> pieces, int color, King king, Tablero tablero) {
         this.pieces = pieces;
@@ -16,6 +17,36 @@ public class Player {
         this.color = color;
         this.king = king;
         this.tablero = tablero;
+        posibleEnroque = true;
+    }
+
+
+    public void enroque(int rookX, int rookY) {
+        Piece[][] positions = tablero.getPosiciones();
+        boolean isValidRook = positions[rookX][rookY] != null && positions[rookX][rookY] instanceof Rook && !((Rook)positions[rookX][rookY]).seMovio();
+        boolean isValidKing = !king.seMovio();
+        if(isValidRook && isValidKing) {
+            Rook rook = (Rook)positions[rookX][rookY];
+            if(color == 0) {
+                if(rookX == 0 && rookY == 0) {
+                    rook.mover(0, 3);
+                    king.mover(0, 2);
+                } else {
+                    rook.mover(0, 6);
+                    king.mover(0, 5);
+                }
+            } else {
+                if(rookX == 7 && rookY == 0) {
+                    rook.mover(7, 3);
+                    king.mover(7, 2);
+                } else {
+                    rook.mover(7, 6);
+                    king.mover(7, 5);
+                }
+            }
+            rook.setSeMovio(true);
+            king.setSeMovio(true);
+        }
     }
 
     public boolean movimientoEsJaque(Piece piece, int movX, int movY) {
@@ -87,5 +118,13 @@ public class Player {
             movimientos.add(new Pair<>(piece, piece.movimientosPosibles()));
         }
         return movimientos;
+    }
+
+    public boolean isPosibleEnroque() {
+        return posibleEnroque;
+    }
+
+    public void setPosibleEnroque(boolean posibleEnroque) {
+        this.posibleEnroque = posibleEnroque;
     }
 }

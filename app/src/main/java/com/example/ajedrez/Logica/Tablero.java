@@ -12,7 +12,7 @@ public class Tablero {
     public Tablero() {
         posiciones = new Piece[8][8];
         ArrayList<Piece> fichasJugador = crearFichas(0);
-        King king = (King)fichasJugador.get(3);
+        King king = (King)fichasJugador.get(4);
         this.player1 = new Player(fichasJugador, 0, king, this);
         fichasJugador = crearFichas(1);
         king = (King)fichasJugador.get(4);
@@ -34,7 +34,7 @@ public class Tablero {
                         piece = new Knight(0, j, this, color);
                     else if(j == 2 || j == 5)
                         piece = new Alfil(0, j, this, color);
-                    else if(j == 3)
+                    else if(j == 4)
                         piece = new King(0, j, this, color);
                     else
                         piece = new Queen(0, j, this, color);

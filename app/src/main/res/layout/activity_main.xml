@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity"
-    android:paddingTop="60dp"
+    android:paddingTop="30dp"
     >
 <TextView
     android:layout_width="match_parent"
@@ -451,6 +451,7 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_marginTop="20dp"
+        android:id="@+id/options"
         >
     <Button
         android:id="@+id/terminarPartida"
@@ -472,4 +473,45 @@
         android:onClick="reiniciarPartida"
         ></Button>
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/pieceChoice"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        >
+        <ImageButton
+            android:layout_height="60dp"
+            android:layout_width="60dp"
+            android:layout_marginRight="10dp"
+            android:adjustViewBounds="true"
+            ></ImageButton>
+        <ImageButton
+            android:layout_height="60dp"
+            android:layout_width="60dp"
+            android:layout_marginRight="10dp"
+            android:adjustViewBounds="true"
+            ></ImageButton>
+        <ImageButton
+            android:layout_height="60dp"
+            android:layout_width="60dp"
+            android:layout_marginRight="10dp"
+            android:adjustViewBounds="true"
+            ></ImageButton>
+        <ImageButton
+            android:layout_height="60dp"
+            android:layout_width="60dp"
+            android:layout_marginRight="10dp"
+            android:adjustViewBounds="true"
+            ></ImageButton>
+        <ImageButton
+            android:layout_height="60dp"
+            android:layout_width="60dp"
+            android:layout_marginRight="10dp"
+            android:adjustViewBounds="true"
+            ></ImageButton>
+
+    </LinearLayout>
+
 </LinearLayout>

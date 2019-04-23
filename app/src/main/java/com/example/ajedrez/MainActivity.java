@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.ajedrez.Logica.Controller;
+import com.example.ajedrez.Logica.Pawn;
 import com.example.ajedrez.Logica.Piece;
 import com.example.ajedrez.Logica.Player;
 import com.example.ajedrez.Logica.Tablero;
@@ -38,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         tablero = findViewById(R.id.tablero);
         controller = Controller.getInstance();
         inicializarPartida();
-
 
 
     }
@@ -132,10 +132,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void checkMate() {
+        checkMate = controller.checkMate();
+        if(checkMate) {
+            disableTablero();
+            setTextTurno();
+        }
+    }
+
     private boolean realizarMovimiento(int posX, int posY, int movX, int movY) {
         boolean ret = controller.moverFicha(posX, posY, movX, movY);
-        if(ret)
-            actualizarTablero(posiciones[movX][movY], clickeado.first, clickeado.second, movimiento.first, movimiento.second);
+        if(ret) {
+            if(posiciones[movX][movY] instanceof Pawn) {
+                // como el peon solo se mueve para adelante, si llega a una punta es porque es la opuesta
+                if(movX == 0 || movX == 7)
+                    mostrarEleccionesPeon(movX, movY, turnPlayer);
+
+            }
+            mostrarTablero();
+        }
         return ret;
     }
 
@@ -151,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
         clickeado = null;
         movimiento = null;
         checkMate = false;
+        findViewById(R.id.options).setVisibility(View.VISIBLE);
+        findViewById(R.id.pieceChoice).setVisibility(View.GONE);
         setOnClickListeners();
 
     }
@@ -199,6 +216,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void enableTablero() {
+        for(int i = 0; i < tablero.getChildCount(); i++) {
+            LinearLayout view = (LinearLayout)tablero.getChildAt(i);
+            for(int j = 0; j < view.getChildCount(); j++) {
+                ImageButton boton = (ImageButton) view.getChildAt(j);
+                boton.setClickable(true);
+            }
+
+        }
+    }
+
     public void removerMovimientosPosibles(ArrayList<Pair<Integer, Integer>> movPosibles, Pair<Integer, Integer> movHecho) {
         for(Pair<Integer, Integer> mov : movPosibles) {
             if(mov != movHecho) {
@@ -226,11 +254,6 @@ public class MainActivity extends AppCompatActivity {
             turno.setText(R.string.blacksTurn);
     }
 
-    public void actualizarTablero(Piece piece, int posX, int posY, int movX, int movY) {
-        getImageButton(posX, posY).setImageResource(android.R.color.transparent);
-        getImageButton(movX, movY).setImageResource(piece.getResImagen());
-
-    }
 
     public ImageButton getImageButton(int x, int y) {
         return ((ImageButton)(((LinearLayout)(tablero.getChildAt(x))).getChildAt(y)));
@@ -243,4 +266,32 @@ public class MainActivity extends AppCompatActivity {
     public void reiniciarPartida(View v) {
         inicializarPartida();
     }
+
+    public void mostrarEleccionesPeon(final int x, final int y, final Player turnPlayer) {
+        disableTablero();
+        final LinearLayout options = findViewById(R.id.options);
+        options.setVisibility(View.GONE);
+        final LinearLayout layout = findViewById(R.id.pieceChoice);
+        layout.setVisibility(View.VISIBLE);
+        ArrayList<Integer> piecesImages = controller.getImagenesFichasJugador();
+        for(int i = 0; i < layout.getChildCount(); i++) {
+            final int index = i;
+            ImageButton button = (ImageButton)layout.getChildAt(i);
+            button.setImageResource(piecesImages.get(i));
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    controller.changePawn((Pawn)posiciones[x][y], index, turnPlayer);
+                    layout.setVisibility(View.GONE);
+                    options.setVisibility(View.VISIBLE);
+                    enableTablero();
+                    mostrarTablero();
+                    //check if turning the pawn into another piece causes a checkmate
+                    checkMate();
+                }
+            });
+        }
+    }
+
+
 }

@@ -39,7 +39,7 @@ public class King extends Piece {
                 movimientosPosibles.add(pair);
             }
         }
-        if(y > 0){
+        if(y < 7){
             if (posiciones[x][y+1] != null && posiciones[x][y+1].color != color) {
                 Pair<Integer, Integer> pair = new Pair<>(x, y+1);
                 movimientosPosibles.add(pair);
@@ -48,7 +48,7 @@ public class King extends Piece {
                 movimientosPosibles.add(pair);
             }
         }
-        if(y < 7){
+        if(y > 0){
             if (posiciones[x][y-1] != null && posiciones[x][y-1].color != color) {
                 Pair<Integer, Integer> pair = new Pair<>(x, y-1);
                 movimientosPosibles.add(pair);
@@ -101,6 +101,10 @@ public class King extends Piece {
 
     public boolean seMovio() {
         return seMovio;
+    }
+
+    public void setSeMovio(boolean seMovio) {
+        this.seMovio = seMovio;
     }
 
     @Override

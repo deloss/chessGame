@@ -34,8 +34,8 @@ public abstract class Piece {
     public boolean movimientoEsJaque(int movX, int movY) {
         Piece[][] posiciones = tablero.getPosiciones();
         Piece auxPiece = posiciones[movX][movY];
-        int posXInicial = getX();
-        int posYInicial = getY();
+        int posXInicial = x;
+        int posYInicial = y;
         if(auxPiece != null && auxPiece.player != player)
             auxPiece.player.piezaComida(auxPiece);
         mover(movX, movY);
@@ -47,7 +47,7 @@ public abstract class Piece {
         return result;
     }
 
-    public boolean movimientoEsValido(int movimientoX, int movimientoY) {
+    private boolean movimientoEsValido(int movimientoX, int movimientoY) {
         ArrayList<Pair<Integer, Integer>> movimientosPosibles = movimientosPosibles();
         for(Pair<Integer, Integer> movimiento : movimientosPosibles){
             if(movimiento.first == movimientoX && movimiento.second == movimientoY ) {
@@ -57,9 +57,6 @@ public abstract class Piece {
         return false;
     }
 
-    public boolean fueraDeTablero(int movimientoX, int movimientoY) {
-        return false;
-    }
 
     public int getResImagen() {
         return resImagen;
@@ -76,7 +73,6 @@ public abstract class Piece {
             return true;
         }
         return false;
-        //podria tirar una excepcion
     }
 
     public void mover(int movimientoX, int movimientoY) {

@@ -17,6 +17,8 @@ public class Rook extends Piece {
             resImagen = R.drawable.blackrook;
     }
 
+
+
     @Override
     public ArrayList<Pair<Integer, Integer>> movimientosPosibles() {
         Piece[][] posiciones = tablero.getPosiciones();
@@ -84,6 +86,59 @@ public class Rook extends Piece {
                 break;
             }
         }
+        King king = player.getKing();
+        if(!seMovio && !king.seMovio()) {
+            boolean posibleEnroque = true;
+            if(color == 0) {
+                if(y == 0) {
+                    for(int i = 1; i < king.getY(); i++) {
+                        if(posiciones[0][i] != null) {
+                            posibleEnroque = false;
+                            break;
+                        }
+                    }
+                    if(posibleEnroque) {
+                        Pair<Integer, Integer> pair = new Pair<>(king.getX(), king.getY());
+                        movimientosPosibles.add(pair);
+                    }
+                } else {
+                    for(int i = 6; i > king.getY(); i--) {
+                        if(posiciones[0][i] != null) {
+                            posibleEnroque = false;
+                            break;
+                        }
+                    }
+                    if(posibleEnroque) {
+                        Pair<Integer, Integer> pair = new Pair<>(king.getX(), king.getY());
+                        movimientosPosibles.add(pair);
+                    }
+                }
+            }else{
+                if(y == 0) {
+                    for(int i = 1; i < king.getY(); i++) {
+                        if(posiciones[7][i] != null) {
+                            posibleEnroque = false;
+                            break;
+                        }
+                    }
+                    if(posibleEnroque) {
+                        Pair<Integer, Integer> pair = new Pair<>(king.getX(), king.getY());
+                        movimientosPosibles.add(pair);
+                    }
+                } else {
+                    for(int i = 6; i > king.getY(); i--) {
+                        if(posiciones[7][i] != null) {
+                            posibleEnroque = false;
+                            break;
+                        }
+                    }
+                    if(posibleEnroque) {
+                        Pair<Integer, Integer> pair = new Pair<>(king.getX(), king.getY());
+                        movimientosPosibles.add(pair);
+                    }
+                }
+            }
+        }
 
         return movimientosPosibles;
     }
@@ -92,8 +147,16 @@ public class Rook extends Piece {
         return seMovio;
     }
 
+    public void setSeMovio(boolean seMovio) {
+        this.seMovio = seMovio;
+    }
+
     @Override
     public boolean moverPieza(int movimientoX, int movimientoY) {
+        if(movimientoX == player.getKing().getX() && movimientoY == player.getKing().getY()){
+            player.enroque(x, y);
+            return true;
+        }
         boolean movioPieza = super.moverPieza(movimientoX, movimientoY);
         if(movioPieza)
             seMovio = true;
