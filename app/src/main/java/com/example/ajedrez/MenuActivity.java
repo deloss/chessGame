@@ -14,7 +14,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void nuevaPartida(View v) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, OfflineGameActivity.class);
         startActivity(intent);
     }
 }

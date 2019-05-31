@@ -20,7 +20,7 @@ import com.example.ajedrez.Logica.Tablero;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class OfflineGameActivity extends AppCompatActivity {
     private GridLayout tablero;
     private Tablero tab;
     private Piece[][] posiciones;
@@ -76,14 +76,14 @@ public class MainActivity extends AppCompatActivity {
                                     boolean resMov = realizarMovimiento(clickeado.first, clickeado.second, movimiento.first, movimiento.second);
                                     Pair<Integer, Integer> movHecho = null;
                                     if (!resMov) {
-                                        Toast.makeText(MainActivity.this, R.string.moveNotPossible, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(OfflineGameActivity.this, R.string.moveNotPossible, Toast.LENGTH_SHORT).show();
                                         movHecho = new Pair<>(movimiento.first, movimiento.second);
                                     } else {
-                                        //Toast.makeText(MainActivity.this, "Movimiento hecho", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(OfflineGameActivity.this, "Movimiento hecho", Toast.LENGTH_SHORT).show();
                                         controller.cambiarTurno();
                                         turnPlayer = controller.getTurnPlayer();
                                     /*if(controller.jugadorEnJaque())
-                                        Toast.makeText(MainActivity.this, "Oponente esta en jaque", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(OfflineGameActivity.this, "Oponente esta en jaque", Toast.LENGTH_SHORT).show();
 */
                                     }
                                     removerMovimientosPosibles(movPosibles, movHecho);
@@ -102,14 +102,14 @@ public class MainActivity extends AppCompatActivity {
                                     boolean resMov = realizarMovimiento(clickeado.first, clickeado.second, movimiento.first, movimiento.second);
                                     Pair<Integer, Integer> movHecho = null;
                                     if(!resMov) {
-                                        Toast.makeText(MainActivity.this, R.string.moveNotPossible, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(OfflineGameActivity.this, R.string.moveNotPossible, Toast.LENGTH_SHORT).show();
                                         movHecho = new Pair<>(movimiento.first, movimiento.second);
                                     }else {
-                                        //Toast.makeText(MainActivity.this, "Movimiento hecho", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(OfflineGameActivity.this, "Movimiento hecho", Toast.LENGTH_SHORT).show();
                                         controller.cambiarTurno();
                                         turnPlayer = controller.getTurnPlayer();
                                         /*if(controller.jugadorEnJaque())
-                                            Toast.makeText(MainActivity.this, "Oponente esta en jaque", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(OfflineGameActivity.this, "Oponente esta en jaque", Toast.LENGTH_SHORT).show();
 */
                                     }
                                     removerMovimientosPosibles(movPosibles, movHecho);
