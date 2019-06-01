@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Chess</string>
-    <string name="play">Play</string>
+    <string name="play_online">Play Online!</string>
+    <string name="play_offline">Play Offline!</string>
     <string name="reset">Reset</string>
     <string name="finishGame">Quit</string>
     <string name="whitesWin">Whites Win!</string>

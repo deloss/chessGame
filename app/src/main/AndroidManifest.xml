@@ -11,7 +11,8 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".OnlineGameActivity"></activity>
+        <activity android:name=".OnlineMenuActivity"></activity>
+        <activity android:name=".OnlineGameActivity" />
         <activity android:name=".MenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,7 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OfflineGameActivity"></activity>
+        <activity android:name=".OfflineGameActivity" />
     </application>
 
 </manifest>
