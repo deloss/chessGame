@@ -39,8 +39,16 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
         user = FirebaseAuth.getInstance().getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("uid-username");
-        if (user != null) {
-            mDatabase.addValueEventListener(new ValueEventListener() {
+        inizialiteUserName();
+    }
+
+    public void inizialiteUserName() {
+        if (user == null) {
+            userName = null;
+            mostrarPantalla();
+        }else {
+
+            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     userName = dataSnapshot.child(user.getUid()).getValue().toString();
@@ -61,8 +69,10 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void cerrarSesion(View v) {
+        mDatabase.child(user.getUid()).removeValue();
         FirebaseAuth.getInstance().signOut();
         user = null;
+        userName = null;
         mostrarPantalla();
     }
 
@@ -81,7 +91,7 @@ public class MenuActivity extends AppCompatActivity {
             alert.setNegativeButton("Cancel", null);
             alert.show();
         }else{
-            Intent intent = new Intent(this, OfflineGameActivity.class);
+            Intent intent = new Intent(this, GameRoomActivity.class);
             startActivity(intent);
         }
     }
@@ -133,8 +143,12 @@ public class MenuActivity extends AppCompatActivity {
                                 }
                             });
                             builder.show();
-                        }else
+                        }else {
+                            userName = snapshot.child(user.getUid()).getValue().toString();
                             mostrarPantalla();
+                        }
+
+
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
