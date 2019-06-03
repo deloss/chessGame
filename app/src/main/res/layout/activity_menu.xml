@@ -55,5 +55,6 @@
         android:textSize="30dp"
         android:padding="20dp"
         android:onClick="cerrarSesion"
+        android:id="@+id/logOut"
         ></Button>
 </LinearLayout>

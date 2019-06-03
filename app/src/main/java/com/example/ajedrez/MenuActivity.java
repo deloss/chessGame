@@ -2,28 +2,57 @@ package com.example.ajedrez;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class MenuActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 123;
     private FirebaseUser user;
+    private DatabaseReference mDatabase;
+    private String userName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("uid-username");
+        if (user != null) {
+            mDatabase.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    userName = dataSnapshot.child(user.getUid()).getValue().toString();
+                    mostrarPantalla();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
     public void nuevaPartidaOffline(View v) {
@@ -34,8 +63,9 @@ public class MenuActivity extends AppCompatActivity {
     public void cerrarSesion(View v) {
         FirebaseAuth.getInstance().signOut();
         user = null;
-        setUserNameDisplay(user);
+        mostrarPantalla();
     }
+
 
     public void nuevaPartidaOnline(View v) {
         if (user == null) {
@@ -61,6 +91,7 @@ public class MenuActivity extends AppCompatActivity {
         // Choose authentication providers
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.GoogleBuilder().build(),
+                new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.PhoneBuilder().build());
 
         // Create and launch sign-in intent
@@ -84,7 +115,34 @@ public class MenuActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 user = FirebaseAuth.getInstance().getCurrentUser();
-                setUserNameDisplay(user);
+                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        if (!snapshot.hasChild(user.getUid())) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(MenuActivity.this);
+                            final EditText input = new EditText(MenuActivity.this);
+                            input.setInputType(InputType.TYPE_CLASS_TEXT);
+                            builder.setView(input);
+                            builder.setTitle("Ingresa un nombre de usuario");
+                            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    userName = input.getText().toString();
+                                    mDatabase.child(user.getUid()).setValue(userName);
+                                    mostrarPantalla();
+                                }
+                            });
+                            builder.show();
+                        }else
+                            mostrarPantalla();
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
 
                 // ...
             } else {
@@ -96,16 +154,23 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-    public void setUserNameDisplay(FirebaseUser user) {
-
-        user = FirebaseAuth.getInstance().getCurrentUser();
+    public void setUserNameDisplay() {
         TextView userDisplay = findViewById(R.id.user_name);
         if (user == null) {
             userDisplay.setText("");
             userDisplay.setVisibility(View.GONE);
         }else{
-            userDisplay.setText(user.getDisplayName());
+            userDisplay.setText("Hello, \n" + userName + "!");
             userDisplay.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void mostrarPantalla() {
+        setUserNameDisplay();
+        Button logOut = findViewById(R.id.logOut);
+        if (user == null)
+            logOut.setVisibility(View.GONE);
+        else
+            logOut.setVisibility(View.VISIBLE);
     }
 }
