@@ -130,6 +130,8 @@ public class GameRoomActivity extends AppCompatActivity {
             });
     }
 
+
+
     private void iniciarPartida() {
         Intent intent = new Intent(this, OfflineGameActivity.class);
         startActivity(intent);

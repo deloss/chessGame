@@ -496,12 +496,6 @@
                 android:layout_marginRight="10dp"
                 android:adjustViewBounds="true"
                 ></ImageButton>
-            <ImageButton
-                android:layout_height="60dp"
-                android:layout_width="60dp"
-                android:layout_marginRight="10dp"
-                android:adjustViewBounds="true"
-                ></ImageButton>
 
         </LinearLayout>
 
