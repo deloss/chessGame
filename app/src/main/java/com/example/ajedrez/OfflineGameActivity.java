@@ -1,5 +1,6 @@
 package com.example.ajedrez;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,12 +33,17 @@ public class OfflineGameActivity extends AppCompatActivity {
     private boolean checkMate;
     private Button finishButton;
     private Button resetButton;
+    private int unselectedWhiteColor;
+    private int unselectedGrayColor;
+    private int selectedWhiteColor;
+    private int selectedGrayColor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tablero = findViewById(R.id.tablero);
         controller = Controller.getInstance();
+        inicializarColores();
         inicializarPartida();
 
 
@@ -79,12 +85,8 @@ public class OfflineGameActivity extends AppCompatActivity {
                                         Toast.makeText(OfflineGameActivity.this, R.string.moveNotPossible, Toast.LENGTH_SHORT).show();
                                         movHecho = new Pair<>(movimiento.first, movimiento.second);
                                     } else {
-                                        //Toast.makeText(OfflineGameActivity.this, "Movimiento hecho", Toast.LENGTH_SHORT).show();
                                         controller.cambiarTurno();
                                         turnPlayer = controller.getTurnPlayer();
-                                    /*if(controller.jugadorEnJaque())
-                                        Toast.makeText(OfflineGameActivity.this, "Oponente esta en jaque", Toast.LENGTH_SHORT).show();
-*/
                                     }
                                     removerMovimientosPosibles(movPosibles, movHecho);
                                     movPosibles = null;
@@ -105,12 +107,8 @@ public class OfflineGameActivity extends AppCompatActivity {
                                         Toast.makeText(OfflineGameActivity.this, R.string.moveNotPossible, Toast.LENGTH_SHORT).show();
                                         movHecho = new Pair<>(movimiento.first, movimiento.second);
                                     }else {
-                                        //Toast.makeText(OfflineGameActivity.this, "Movimiento hecho", Toast.LENGTH_SHORT).show();
                                         controller.cambiarTurno();
                                         turnPlayer = controller.getTurnPlayer();
-                                        /*if(controller.jugadorEnJaque())
-                                            Toast.makeText(OfflineGameActivity.this, "Oponente esta en jaque", Toast.LENGTH_SHORT).show();
-*/
                                     }
                                     removerMovimientosPosibles(movPosibles, movHecho);
                                     movPosibles = null;
@@ -132,6 +130,14 @@ public class OfflineGameActivity extends AppCompatActivity {
         }
     }
 
+    public void inicializarColores() {
+        Resources res = getResources();
+        unselectedGrayColor = res.getColor(R.color.unselectedGray);
+        unselectedWhiteColor = res.getColor(R.color.unselectedWhite);
+        selectedGrayColor = res.getColor(R.color.selectedGray);
+        selectedWhiteColor = res.getColor(R.color.selectedWhite);
+    }
+
     public void checkMate() {
         checkMate = controller.checkMate();
         if(checkMate) {
@@ -144,7 +150,6 @@ public class OfflineGameActivity extends AppCompatActivity {
         boolean ret = controller.moverFicha(posX, posY, movX, movY);
         if(ret) {
             if(posiciones[movX][movY] instanceof Pawn) {
-                // como el peon solo se mueve para adelante, si llega a una punta es porque es la opuesta
                 if(movX == 0 || movX == 7)
                     mostrarEleccionesPeon(movX, movY, turnPlayer);
 
@@ -200,7 +205,7 @@ public class OfflineGameActivity extends AppCompatActivity {
     public ArrayList<Pair<Integer, Integer>> mostrarMovimientosPosibles() {
         ArrayList<Pair<Integer, Integer>> movPosibles = controller.movimientosPosiblesFicha(posiciones[clickeado.first][clickeado.second]);
         for(Pair<Integer, Integer> mov : movPosibles) {
-            getImageButton(mov.first, mov.second).setBackgroundColor(Color.RED);
+            getImageButton(mov.first, mov.second).setBackgroundColor(getColorPosicionMarcado(mov.first, mov.second));
         }
         return movPosibles;
     }
@@ -237,9 +242,16 @@ public class OfflineGameActivity extends AppCompatActivity {
 
     public int getColorPosicion(int x, int y) {
         if(x % 2 == 0 && y % 2 == 0 || x % 2 == 1 && y % 2 == 1)
-            return Color.GRAY;
+            return unselectedGrayColor;
         else
-            return Color.WHITE;
+            return unselectedWhiteColor;
+    }
+
+    public int getColorPosicionMarcado(int x, int y) {
+        if(x % 2 == 0 && y % 2 == 0 || x % 2 == 1 && y % 2 == 1)
+            return selectedGrayColor;
+        else
+            return selectedWhiteColor;
     }
 
     public void setTextTurno() {

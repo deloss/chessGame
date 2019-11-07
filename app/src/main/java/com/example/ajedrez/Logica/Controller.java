@@ -65,10 +65,7 @@ public class Controller {
     }
 
     public Player oponente(Player player) {
-        if(player == tablero.getPlayer1())
-            return tablero.getPlayer2();
-        else
-            return tablero.getPlayer1();
+        return player == tablero.getPlayer1() ? tablero.getPlayer2() : tablero.getPlayer1();
     }
 
     public Player getTurnPlayer() {

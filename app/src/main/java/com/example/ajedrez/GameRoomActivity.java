@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.TextView;
 
+import com.example.ajedrez.Logica.RecyclerViewItemOnClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +46,12 @@ public class GameRoomActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         // specify an adapter (see also next example)
-        mAdapter = new UserGameRoomAdapter(userList);
+        mAdapter = new UserGameRoomAdapter(userList, new RecyclerViewItemOnClickListener() {
+            @Override
+            public void onClick(View v, int position) {
+                System.out.println("Click");
+            }
+        });
         recyclerView.setAdapter(mAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
         getUsersOnline();
