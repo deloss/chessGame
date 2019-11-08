@@ -17,6 +17,8 @@ import com.example.ajedrez.Logica.Pawn;
 import com.example.ajedrez.Logica.Piece;
 import com.example.ajedrez.Logica.Player;
 import com.example.ajedrez.Logica.Tablero;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 

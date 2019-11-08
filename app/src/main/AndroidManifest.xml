@@ -11,7 +11,8 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".GameRoomActivity"></activity>
+        <activity android:name=".GameRoomActivity" />
+
         <activity android:name=".OnlineMenuActivity" />
         <activity android:name=".OnlineGameActivity" />
         <activity android:name=".MenuActivity">
@@ -22,6 +23,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".OfflineGameActivity" />
+        <service android:name=".MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+
     </application>
 
 </manifest>
