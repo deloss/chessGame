@@ -39,6 +39,7 @@ public class OnlineGameActivity extends AppCompatActivity {
     private int unselectedGrayColor;
     private int selectedWhiteColor;
     private int selectedGrayColor;
+    private boolean itsMyTurn;
     private FirebaseController fbController;
 
     @Override
@@ -86,8 +87,7 @@ public class OnlineGameActivity extends AppCompatActivity {
                                         Toast.makeText(OnlineGameActivity.this, R.string.moveNotPossible, Toast.LENGTH_SHORT).show();
                                         movHecho = new Pair<>(movimiento.first, movimiento.second);
                                     } else {
-                                        controller.cambiarTurno();
-                                        turnPlayer = controller.getTurnPlayer();
+                                        terminarTurno();
                                     }
                                     removerMovimientosPosibles(movPosibles, movHecho);
                                     movPosibles = null;
@@ -108,8 +108,7 @@ public class OnlineGameActivity extends AppCompatActivity {
                                     Toast.makeText(OnlineGameActivity.this, R.string.moveNotPossible, Toast.LENGTH_SHORT).show();
                                     movHecho = new Pair<>(movimiento.first, movimiento.second);
                                 }else {
-                                    controller.cambiarTurno();
-                                    turnPlayer = controller.getTurnPlayer();
+                                    terminarTurno();
                                 }
                                 removerMovimientosPosibles(movPosibles, movHecho);
                                 movPosibles = null;
@@ -129,6 +128,12 @@ public class OnlineGameActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+    private void terminarTurno() {
+        fbController.terminarTurno(OnlineGameActivity.this);
+        controller.cambiarTurno();
+        turnPlayer = controller.getTurnPlayer();
     }
 
     public void inicializarColores() {
@@ -304,5 +309,9 @@ public class OnlineGameActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void setItsMyTurn(boolean itsMyTurn) {
+        this.itsMyTurn = itsMyTurn;
     }
 }

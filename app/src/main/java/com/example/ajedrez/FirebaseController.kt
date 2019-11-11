@@ -16,6 +16,7 @@ object FirebaseController {
     private var user: FirebaseUser? = null
     private var myTurn : Int = -1
     private var matchName : String = ""
+    private var myTurnAux : Int = -1
 
     init {
         user = FirebaseAuth.getInstance().currentUser
@@ -54,6 +55,9 @@ object FirebaseController {
                     2
                 else
                     1
+                // BORRAR DSP
+                myTurnAux = myTurn
+                ///
                 if (fuiInvitado)
                     matchName = posibleMatchName
                 val game = matchGamesDb!!.child(matchName)
@@ -90,7 +94,8 @@ object FirebaseController {
         gameDb.child("turn").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.value == myTurn.toLong()) {
-                    println("es mi turno");
+                    activity.setItsMyTurn(true)
+                    println("es mi turno")
                 }
             }
 
@@ -100,6 +105,26 @@ object FirebaseController {
         })
     }
 
+    fun terminarTurno(activity : OnlineGameActivity) {
+        gamesDb!!.child(matchName).child("turn").setValue(getTurnoOpuestoAux())
+        activity.setItsMyTurn(false)
+        println("ya no es mi turno")
+    }
+
+    private fun getTurnoOpuestoAux() : Int {
+        if (myTurnAux == 1)
+            myTurnAux = 2
+        else
+           myTurnAux = 1
+        return myTurnAux
+    }
+
+    private fun getTurnoOpuesto() : Int {
+        return if (myTurn == 1)
+            2
+        else
+            1
+    }
 
 }
 
