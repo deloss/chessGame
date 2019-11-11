@@ -24,28 +24,19 @@ import com.google.firebase.database.annotations.NotNull;
 import java.util.ArrayList;
 
 public class GameRoomActivity extends AppCompatActivity {
-    private final static String UID_USERNAME_DB = "uid-username";
-    private final static String GAMES_DB = "game_match";
 
-    private FirebaseUser user; //here its assumed that user is not null
-    private DatabaseReference mDatabase;
-    private TextView usersCount;
+    private FirebaseController fbController;
     private RecyclerView recyclerView;
     private UserGameRoomAdapter mAdapter;
     private ArrayList<String> userList;
-    private DatabaseReference gamesDb;
-    private String matchName;
-    private boolean fuiInvitado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_room);
+        fbController = FirebaseController.INSTANCE;
         userList = new ArrayList<>();
-        user = FirebaseAuth.getInstance().getCurrentUser();
-        mDatabase = FirebaseDatabase.getInstance().getReference().child(UID_USERNAME_DB);
         recyclerView = findViewById(R.id.my_recycler_view);
-        gamesDb = FirebaseDatabase.getInstance().getReference().child(GAMES_DB);
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         recyclerView.setHasFixedSize(true);
@@ -59,111 +50,19 @@ public class GameRoomActivity extends AppCompatActivity {
         mAdapter = new UserGameRoomAdapter(userList, new RecyclerViewItemOnClickListener() {
             @Override
             public void onClick(View v, final int position) {
-                matchName = user.getUid() + "-" + userList.get(position);
-
-                gamesDb.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        String posibleMatchName = userList.get(position) + "-" + user.getUid();
-                        fuiInvitado = dataSnapshot.child(posibleMatchName).getValue() != null;
-                        if (fuiInvitado)
-                            matchName = posibleMatchName;
-                        DatabaseReference game = gamesDb.child(matchName);
-                        if(fuiInvitado) {
-                            game.setValue(2L);
-                            iniciarPartida();
-                        } else {
-                            game.setValue(1L);
-                            game.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    if(dataSnapshot.getValue() != null) { //por testear en consola
-                                        if( (Long) dataSnapshot.getValue() == 2L ) {
-                                            iniciarPartida();
-                                        }
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                }
-                            });
-                        }
-
-
-//                        Long valueMatch;
-//                        if (dataSnapshot.getValue() == null) { // i made the invite
-//                            valueMatch = 0L;
-//                            invitacion = true;
-//                        }
-//                        else
-//                            valueMatch = (Long)dataSnapshot.getValue();
-//                        if (valueMatch == 0L)
-//                            gamesDb.child(matchName).setValue(1L);
-//                        else
-//                            gamesDb.child(matchName).setValue(2L);
-//                        gamesDb.child(matchName).addValueEventListener(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                    if (dataSnapshot.getValue() != null) { //probar en la consola da problemas
-//                                        System.out.println(dataSnapshot.getValue());
-//                                        if ((Long) dataSnapshot.getValue() == 2L) {
-//                                            System.out.println("los dos hicieron click");
-//                                            if (invitacion) {
-//                                                gamesDb.child(matchName).removeValue();
-//                                                invitacion = false;
-//                                            }
-//                                            iniciarPartida();
-//                                        }
-//                                    }
-//
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                            }
-//                        });
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-                System.out.println("Click");
+                fbController.invitePlayer(GameRoomActivity.this, userList.get(position));
             }
         });
         recyclerView.setAdapter(mAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
-        getUsersOnline();
+        fbController.getUsersOnline(this, userList);
     }
 
-    private void getUsersOnline() {
-            mDatabase.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    userList.clear();
-                    for (DataSnapshot userData: dataSnapshot.getChildren()) {
-                        if (!userData.getKey().equals(user.getUid())) {
-                            userList.add(userData.getValue().toString());
-                        }
-                    }
-                    mAdapter.notifyDataSetChanged();
-                    //usersCount.setText(String.valueOf(dataSnapshot.getChildrenCount())); // just testing
-                    //mostrarPantalla(); aca hay que cargar los datos
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+    public void notifyDataSetChanged() {
+        mAdapter.notifyDataSetChanged();
     }
 
-
-
-    private void iniciarPartida() {
+    public void iniciarPartida() {
         Intent intent = new Intent(this, OfflineGameActivity.class);
         startActivity(intent);
     }
