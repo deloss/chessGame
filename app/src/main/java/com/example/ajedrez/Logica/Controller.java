@@ -10,6 +10,7 @@ public class Controller {
     private static final Controller ourInstance = new Controller();
     private Tablero tablero;
     private Player turnPlayer;
+
     public static Controller getInstance() {
         return ourInstance;
     }
@@ -26,12 +27,12 @@ public class Controller {
 
     public boolean moverFicha(int posX, int posY, int movX, int movY) {
         Piece[][] posiciones = tablero.getPosiciones();
-        if(posiciones[posX][posY] == null || posiciones[posX][posY].color != turnPlayer.getColor() || posiciones[movX][movY] == null || posiciones[movX][movY].color == turnPlayer.getColor()) {
+        if (posiciones[posX][posY] == null || posiciones[posX][posY].color != turnPlayer.getColor() || posiciones[movX][movY] == null || posiciones[movX][movY].color == turnPlayer.getColor()) {
             return turnPlayer.moverPieza(posiciones[posX][posY], movX, movY);
-        }else {
+        } else {
             Piece piezaMov = posiciones[movX][movY];
             boolean moverPieza = turnPlayer.moverPieza(posiciones[posX][posY], movX, movY);
-            if(moverPieza && piezaMov != null && piezaMov.player != turnPlayer)
+            if (moverPieza && piezaMov != null && piezaMov.player != turnPlayer)
                 oponente(turnPlayer).piezaComida(piezaMov);
             return moverPieza;
         }
@@ -39,18 +40,16 @@ public class Controller {
     }
 
 
-
     public boolean checkMate() {
         return turnPlayer.checkMate();
     }
 
 
-
     public ArrayList<Pair<Integer, Integer>> movimientosPosiblesFicha(Piece piece) {
         ArrayList<Pair<Integer, Integer>> movPosibles = piece.movimientosPosibles();
         ArrayList<Pair<Integer, Integer>> movSinJaque = new ArrayList<>();
-        for(Pair<Integer, Integer> mov : movPosibles) {
-            if(!piece.movimientoEsJaque(mov.first, mov.second))
+        for (Pair<Integer, Integer> mov : movPosibles) {
+            if (!piece.movimientoEsJaque(mov.first, mov.second))
                 movSinJaque.add(mov);
         }
         return movSinJaque;
@@ -58,7 +57,7 @@ public class Controller {
 
 
     public void cambiarTurno() {
-        if(turnPlayer == tablero.getPlayer1())
+        if (turnPlayer == tablero.getPlayer1())
             turnPlayer = tablero.getPlayer2();
         else
             turnPlayer = tablero.getPlayer1();
@@ -74,13 +73,13 @@ public class Controller {
 
     public ArrayList<Integer> getImagenesFichasJugador() {
         ArrayList<Integer> imagenes = new ArrayList<>();
-        if(turnPlayer.getColor() == 0) {
+        if (turnPlayer.getColor() == 0) {
             imagenes.add(new Integer(R.drawable.whiterook));
             imagenes.add(new Integer(R.drawable.whiteknight));
             imagenes.add(new Integer(R.drawable.whitealfil));
             imagenes.add(new Integer(R.drawable.whitequeen));
             imagenes.add(new Integer(R.drawable.whitepawn));
-        }else{
+        } else {
             imagenes.add(new Integer(R.drawable.blackrook));
             imagenes.add(new Integer(R.drawable.blackknight));
             imagenes.add(new Integer(R.drawable.blackalfil));
@@ -100,13 +99,13 @@ public class Controller {
     public void changePawn(Pawn pawn, int pieceType, Player player) {
         Piece[][] posiciones = tablero.getPosiciones();
         Piece piece;
-        if(pieceType == 0)
+        if (pieceType == 0)
             piece = new Rook(pawn.getX(), pawn.getY(), tablero, pawn.getColor());
-        else if(pieceType == 1)
+        else if (pieceType == 1)
             piece = new Knight(pawn.getX(), pawn.getY(), tablero, pawn.getColor());
-        else if(pieceType == 2)
+        else if (pieceType == 2)
             piece = new Alfil(pawn.getX(), pawn.getY(), tablero, pawn.getColor());
-        else if(pieceType == 3)
+        else if (pieceType == 3)
             piece = new Queen(pawn.getX(), pawn.getY(), tablero, pawn.getColor());
         else
             piece = new Pawn(pawn.getX(), pawn.getY(), tablero, pawn.getColor());

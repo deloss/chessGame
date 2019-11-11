@@ -36,17 +36,15 @@ public class GameRoomActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_room);
         fbController = FirebaseController.INSTANCE;
         userList = new ArrayList<>();
-        recyclerView = findViewById(R.id.my_recycler_view);
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        recyclerView.setHasFixedSize(true);
+        initRecyclerView();
+        fbController.getUsersOnline(this, userList);
+    }
 
-        // use a linear layout manager
+    private void initRecyclerView() {
+        recyclerView = findViewById(R.id.my_recycler_view);
+        recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
-
-        // specify an adapter (see also next example)
         mAdapter = new UserGameRoomAdapter(userList, new RecyclerViewItemOnClickListener() {
             @Override
             public void onClick(View v, final int position) {
@@ -55,7 +53,6 @@ public class GameRoomActivity extends AppCompatActivity {
         });
         recyclerView.setAdapter(mAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
-        fbController.getUsersOnline(this, userList);
     }
 
     public void notifyDataSetChanged() {

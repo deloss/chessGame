@@ -60,10 +60,7 @@ public class OnlineGameActivity extends AppCompatActivity {
                 boton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //v.setBackgroundResource(R.color.colorAccent);
-                        // fila
                         int fila = indexI;
-                        //columna
                         int columna = indexJ;
 
                         if(posiciones[fila][columna] != null) {

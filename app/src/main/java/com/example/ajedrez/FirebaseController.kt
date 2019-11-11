@@ -17,7 +17,7 @@ object FirebaseController {
         mDatabase = FirebaseDatabase.getInstance().reference.child(UID_USERNAME_DB)
     }
 
-    fun getUsersOnline(activity : GameRoomActivity, userList : ArrayList<String>) {
+    fun getUsersOnline(activity: GameRoomActivity, userList: ArrayList<String>) {
         mDatabase!!.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 userList.clear()
@@ -35,43 +35,45 @@ object FirebaseController {
         })
     }
 
-    fun invitePlayer(activity : GameRoomActivity, username : String) {
+    fun invitePlayer(activity: GameRoomActivity, username: String) {
         var matchName = user!!.getUid() + "-" + username
         val gamesDb = FirebaseDatabase.getInstance().reference.child(GAMES_DB)
         gamesDb.addListenerForSingleValueEvent(object : ValueEventListener {
 
-            override fun onDataChange(dataSnapshot : DataSnapshot) {
-        val posibleMatchName = username + "-" + user!!.getUid()
-        val fuiInvitado = dataSnapshot.child(posibleMatchName).getValue() != null
-        if (fuiInvitado)
-            matchName = posibleMatchName
-        val game = gamesDb.child(matchName)
-        if (fuiInvitado) {
-            game.setValue(2L)
-            activity.iniciarPartida()
-        } else {
-            game.setValue(1L)
-            game.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.value != null) { //por testear en consola
-                        if (dataSnapshot.value as Long? == 2L) {
-                            activity.iniciarPartida()
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val posibleMatchName = username + "-" + user!!.getUid()
+                val fuiInvitado = dataSnapshot.child(posibleMatchName).getValue() != null
+                if (fuiInvitado)
+                    matchName = posibleMatchName
+                val game = gamesDb.child(matchName)
+                if (fuiInvitado) {
+                    game.setValue(2L)
+                    activity.iniciarPartida()
+                } else {
+                    game.setValue(1L)
+                    game.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            if (dataSnapshot.value != null) { //por testear en consola
+                                if (dataSnapshot.value as Long? == 2L) {
+                                    activity.iniciarPartida()
+                                }
+                            }
                         }
-                    }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+
+                        }
+                    })
                 }
 
-                override fun onCancelled(databaseError: DatabaseError) {
-
-                }
-            })
-        }
-
-    }
+            }
 
             override fun onCancelled(databaseError: DatabaseError) {}
-        });
+        })
         println("Click")
     }
+
+
 }
 
 
