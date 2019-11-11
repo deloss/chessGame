@@ -7,14 +7,21 @@ import com.google.firebase.database.*
 object FirebaseController {
 
     private val UID_USERNAME_DB = "uid-username"
-    private val GAMES_DB = "game_match"
+    private val MATCH_GAMES_DB = "game_match"
+    private val GAMES_DB = "games"
 
     private var mDatabase: DatabaseReference? = null
+    private var matchGamesDb: DatabaseReference? = null
+    private var gamesDb: DatabaseReference? = null
     private var user: FirebaseUser? = null
+    private var myTurn : Int = -1
+    private var matchName : String = ""
 
     init {
         user = FirebaseAuth.getInstance().currentUser
         mDatabase = FirebaseDatabase.getInstance().reference.child(UID_USERNAME_DB)
+        matchGamesDb = FirebaseDatabase.getInstance().reference.child(MATCH_GAMES_DB)
+        gamesDb = FirebaseDatabase.getInstance().reference.child(GAMES_DB)
     }
 
     fun getUsersOnline(activity: GameRoomActivity, userList: ArrayList<String>) {
@@ -36,26 +43,31 @@ object FirebaseController {
     }
 
     fun invitePlayer(activity: GameRoomActivity, username: String) {
-        var matchName = user!!.getUid() + "-" + username
-        val gamesDb = FirebaseDatabase.getInstance().reference.child(GAMES_DB)
-        gamesDb.addListenerForSingleValueEvent(object : ValueEventListener {
+        matchName = user!!.getUid() + "-" + username
+
+        matchGamesDb!!.addListenerForSingleValueEvent(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val posibleMatchName = username + "-" + user!!.getUid()
-                val fuiInvitado = dataSnapshot.child(posibleMatchName).getValue() != null
+                val fuiInvitado = dataSnapshot.child(posibleMatchName).value != null
+                myTurn = if (fuiInvitado)
+                    2
+                else
+                    1
                 if (fuiInvitado)
                     matchName = posibleMatchName
-                val game = gamesDb.child(matchName)
+                val game = matchGamesDb!!.child(matchName)
                 if (fuiInvitado) {
                     game.setValue(2L)
-                    activity.iniciarPartida()
+                    activity.iniciarPartida(myTurn)
                 } else {
                     game.setValue(1L)
                     game.addValueEventListener(object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (dataSnapshot.value != null) { //por testear en consola
                                 if (dataSnapshot.value as Long? == 2L) {
-                                    activity.iniciarPartida()
+                                    gamesDb!!.child(matchName).child("turn").setValue(myTurn)
+                                    activity.iniciarPartida(myTurn)
                                 }
                             }
                         }
@@ -71,6 +83,21 @@ object FirebaseController {
             override fun onCancelled(databaseError: DatabaseError) {}
         })
         println("Click")
+    }
+
+    fun turnListener(activity : OnlineGameActivity) {
+        val gameDb = gamesDb!!.child(matchName)
+        gameDb.child("turn").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.value == myTurn.toLong()) {
+                    println("es mi turno");
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+
+            }
+        })
     }
 
 

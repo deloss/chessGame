@@ -39,11 +39,14 @@ public class OnlineGameActivity extends AppCompatActivity {
     private int unselectedGrayColor;
     private int selectedWhiteColor;
     private int selectedGrayColor;
+    private FirebaseController fbController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_game);
+        fbController = FirebaseController.INSTANCE;
+        fbController.turnListener(this);
         tablero = findViewById(R.id.tablero);
         controller = Controller.getInstance();
         inicializarColores();
