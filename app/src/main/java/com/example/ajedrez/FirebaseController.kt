@@ -1,18 +1,23 @@
 package com.example.ajedrez
 
+import android.util.Pair
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 object FirebaseController {
 
     private val UID_USERNAME_DB = "uid-username"
     private val MATCH_GAMES_DB = "game_match"
     private val GAMES_DB = "games"
+    private val PLAYS_DB = "plays"
 
     private var mDatabase: DatabaseReference? = null
     private var matchGamesDb: DatabaseReference? = null
     private var gamesDb: DatabaseReference? = null
+    private var playsDb: DatabaseReference? = null
     private var user: FirebaseUser? = null
     private var myTurn : Int = -1
     private var matchName : String = ""
@@ -23,6 +28,7 @@ object FirebaseController {
         mDatabase = FirebaseDatabase.getInstance().reference.child(UID_USERNAME_DB)
         matchGamesDb = FirebaseDatabase.getInstance().reference.child(MATCH_GAMES_DB)
         gamesDb = FirebaseDatabase.getInstance().reference.child(GAMES_DB)
+        playsDb = FirebaseDatabase.getInstance().reference.child(PLAYS_DB)
     }
 
     fun getUsersOnline(activity: GameRoomActivity, userList: ArrayList<String>) {
@@ -124,6 +130,37 @@ object FirebaseController {
             2
         else
             1
+    }
+
+    private fun leerMapAPair(map: Map<String, Object>) : Pair<Pair<Int, Int>, Pair<Int, Int>> {
+        val first = map["first"] as Map<String, Object>
+        val firstPairFirst = (first["first"] as Long).toInt()
+        val firstPairSecond = (first["second"] as Long).toInt()
+        val second = map["second"] as Map<String, Object>
+        val secondPairFirst = (second["first"] as Long).toInt()
+        val secondPairSecond = (second["second"] as Long).toInt()
+        return Pair(Pair(firstPairFirst, firstPairSecond), Pair(secondPairFirst, secondPairSecond))
+    }
+
+    fun leerMovimiento(activity: OnlineGameActivity) {
+        playsDb!!.child(matchName).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val mapValue = dataSnapshot.value as Map<String, Object>
+                val turnValue = (mapValue.get("first") as Long).toInt()
+                val objectValue = mapValue.get("second") as Map<String, Object>
+                val mov = leerMapAPair(objectValue)
+                if (turnValue == getTurnoOpuesto()) {
+                    playsDb!!.child(matchName).removeEventListener(this)
+                    activity.leerMovimiento(mov)
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {}
+        })
+    }
+
+    fun realizarMovimiento(mov: Pair<Any, Any>) {
+        playsDb!!.child(matchName).child("mov").setValue(Pair(myTurn, mov))
     }
 
 }

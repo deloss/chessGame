@@ -130,10 +130,15 @@ public class OnlineGameActivity extends AppCompatActivity {
         }
     }
 
+    public void leerMovimiento(Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> movimiento) {
+        System.out.println(movimiento);
+    }
+
     private void terminarTurno() {
         fbController.terminarTurno(OnlineGameActivity.this);
         controller.cambiarTurno();
         turnPlayer = controller.getTurnPlayer();
+        fbController.leerMovimiento(this);
     }
 
     public void inicializarColores() {
@@ -153,6 +158,7 @@ public class OnlineGameActivity extends AppCompatActivity {
     }
 
     private boolean realizarMovimiento(int posX, int posY, int movX, int movY) {
+        fbController.realizarMovimiento(new Pair(new Pair(posX, posY), new Pair(movX, movY)));
         boolean ret = controller.moverFicha(posX, posY, movX, movY);
         if(ret) {
             if(posiciones[movX][movY] instanceof Pawn) {
