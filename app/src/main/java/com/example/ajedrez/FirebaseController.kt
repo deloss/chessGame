@@ -31,6 +31,12 @@ object FirebaseController {
         playsDb = FirebaseDatabase.getInstance().reference.child(PLAYS_DB)
     }
 
+    fun clearDB() { //Only for testing purposes, does not delete uid-username
+        playsDb!!.removeValue()
+        gamesDb!!.removeValue()
+        matchGamesDb!!.removeValue()
+    }
+
     fun getUsersOnline(activity: GameRoomActivity, userList: ArrayList<String>) {
         mDatabase!!.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -61,9 +67,7 @@ object FirebaseController {
                     2
                 else
                     1
-                // BORRAR DSP
                 myTurnAux = myTurn
-                ///
                 if (fuiInvitado)
                     matchName = posibleMatchName
                 val game = matchGamesDb!!.child(matchName)
@@ -117,20 +121,21 @@ object FirebaseController {
         println("ya no es mi turno")
     }
 
+    private fun getTurnoOpuesto() : Int {
+        if (myTurn == 1)
+            return 2
+        else
+           return 1
+    }
+
     private fun getTurnoOpuestoAux() : Int {
         if (myTurnAux == 1)
             myTurnAux = 2
         else
-           myTurnAux = 1
+            myTurnAux = 1
         return myTurnAux
     }
 
-    private fun getTurnoOpuesto() : Int {
-        return if (myTurn == 1)
-            2
-        else
-            1
-    }
 
     private fun leerMapAPair(map: Map<String, Object>) : Pair<Pair<Int, Int>, Pair<Int, Int>> {
         val first = map["first"] as Map<String, Object>
@@ -142,16 +147,39 @@ object FirebaseController {
         return Pair(Pair(firstPairFirst, firstPairSecond), Pair(secondPairFirst, secondPairSecond))
     }
 
-    fun leerMovimiento(activity: OnlineGameActivity) {
-        playsDb!!.child(matchName).addValueEventListener(object : ValueEventListener {
+//    fun leerMovimiento(activity: OnlineGameActivity) {
+//        playsDb!!.child(matchName).child("turn").addValueEventListener(object : ValueEventListener {
+//
+//            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                    val turnValue = (dataSnapshot.value as Long).toInt()
+//                    val objectValue = mapValue.get("second") as Map<String, Object>
+//                    val mov = leerMapAPair(objectValue)
+//                    if (turnValue == getTurnoOpuesto()) {
+//                        playsDb!!.child(matchName).removeEventListener(this)
+//                        activity.leerMovimiento(mov)
+//                    }
+//            }
+//
+//            override fun onCancelled(p0: DatabaseError) {}
+//        })
+//    }
+
+        fun leerMovimiento(activity: OnlineGameActivity) {
+        playsDb!!.child(matchName).child("turn").addValueEventListener(object : ValueEventListener {
+
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val mapValue = dataSnapshot.value as Map<String, Object>
-                val turnValue = (mapValue.get("first") as Long).toInt()
-                val objectValue = mapValue.get("second") as Map<String, Object>
-                val mov = leerMapAPair(objectValue)
+                val turnValue = (dataSnapshot.value as Long).toInt()
                 if (turnValue == getTurnoOpuesto()) {
                     playsDb!!.child(matchName).removeEventListener(this)
-                    activity.leerMovimiento(mov)
+                    playsDb!!.child(matchName).child("mov").addListenerForSingleValueEvent(object : ValueEventListener{
+                        override fun onDataChange(p0: DataSnapshot) {
+                            val mov = leerMapAPair(p0.value as Map<String, Object>)
+                            activity.leerMovimiento(mov)
+                        }
+
+                        override fun onCancelled(p0: DatabaseError) {}
+                    })
+
                 }
             }
 
@@ -159,8 +187,11 @@ object FirebaseController {
         })
     }
 
+
     fun realizarMovimiento(mov: Pair<Any, Any>) {
-        playsDb!!.child(matchName).child("mov").setValue(Pair(myTurn, mov))
+        val play = playsDb!!.child(matchName)
+        play.child("turn").setValue(myTurnAux)
+        play.child("mov").setValue(mov)
     }
 
 }

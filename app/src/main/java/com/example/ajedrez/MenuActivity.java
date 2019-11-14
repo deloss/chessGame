@@ -63,6 +63,10 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
+    public void clearDb(View v) {
+        FirebaseController.INSTANCE.clearDB();
+    }
+
     public void nuevaPartidaOffline(View v) {
         Intent intent = new Intent(this, OfflineGameActivity.class);
         startActivity(intent);
