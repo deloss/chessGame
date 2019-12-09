@@ -142,7 +142,7 @@ public class MenuActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     userName = input.getText().toString();
-                                    mDatabase.child(user.getUid()).setValue(userName);
+                                    mDatabase.child(user.getUid()).setValue(user.getUid());
                                     mostrarPantalla();
                                 }
                             });

@@ -43,7 +43,7 @@ object FirebaseController {
                 userList.clear()
                 for (userData in dataSnapshot.children) {
                     if (userData.key != user?.getUid()) {
-                        userList.add(userData.value!!.toString())
+                        userList.add(userData.key!!.toString())
                     }
                 }
                 activity.notifyDataSetChanged()
@@ -116,7 +116,7 @@ object FirebaseController {
     }
 
     fun terminarTurno(activity : OnlineGameActivity) {
-        gamesDb!!.child(matchName).child("turn").setValue(getTurnoOpuestoAux())
+        gamesDb!!.child(matchName).child("turn").setValue(getTurnoOpuesto())
         activity.setItsMyTurn(false)
         println("ya no es mi turno")
     }
@@ -165,32 +165,30 @@ object FirebaseController {
 //    }
 
         fun leerMovimiento(activity: OnlineGameActivity) {
-        playsDb!!.child(matchName).child("turn").addValueEventListener(object : ValueEventListener {
+            gamesDb!!.child(matchName).child("turn").addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    val turnValue = (dataSnapshot.value as Long).toInt()
+                    if (turnValue == myTurn) {
+                        gamesDb!!.child(matchName).removeEventListener(this)
+                        playsDb!!.child(matchName).child("mov").addListenerForSingleValueEvent(object : ValueEventListener{
+                            override fun onDataChange(p0: DataSnapshot) {
+                                val mov = leerMapAPair(p0.value as Map<String, Object>)
+                                activity.leerMovimiento(mov)
+                            }
 
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val turnValue = (dataSnapshot.value as Long).toInt()
-                if (turnValue == getTurnoOpuesto()) {
-                    playsDb!!.child(matchName).removeEventListener(this)
-                    playsDb!!.child(matchName).child("mov").addListenerForSingleValueEvent(object : ValueEventListener{
-                        override fun onDataChange(p0: DataSnapshot) {
-                            val mov = leerMapAPair(p0.value as Map<String, Object>)
-                            activity.leerMovimiento(mov)
-                        }
+                            override fun onCancelled(p0: DatabaseError) {}
+                        })
 
-                        override fun onCancelled(p0: DatabaseError) {}
-                    })
-
+                    }
                 }
-            }
 
-            override fun onCancelled(p0: DatabaseError) {}
-        })
+                override fun onCancelled(p0: DatabaseError) {}
+            })
     }
 
 
     fun realizarMovimiento(mov: Pair<Any, Any>) {
         val play = playsDb!!.child(matchName)
-        play.child("turn").setValue(myTurnAux)
         play.child("mov").setValue(mov)
     }
 

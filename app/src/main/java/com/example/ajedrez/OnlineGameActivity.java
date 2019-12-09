@@ -39,7 +39,6 @@ public class OnlineGameActivity extends AppCompatActivity {
     private int unselectedGrayColor;
     private int selectedWhiteColor;
     private int selectedGrayColor;
-    private boolean itsMyTurn;
     private FirebaseController fbController;
 
     @Override
