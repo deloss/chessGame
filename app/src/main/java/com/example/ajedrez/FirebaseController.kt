@@ -73,7 +73,19 @@ object FirebaseController {
                 val game = matchGamesDb!!.child(matchName)
                 if (fuiInvitado) {
                     game.setValue(2L)
-                    activity.iniciarPartida(myTurn)
+                    gamesDb!!.child(matchName).child("turn").addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            if (dataSnapshot.value != null) { //por testear en consola
+                                if (dataSnapshot.value as Long? == 1L) {
+                                    activity.iniciarPartida(false)
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+
+                        }
+                    })
                 } else {
                     game.setValue(1L)
                     game.addValueEventListener(object : ValueEventListener {
@@ -81,7 +93,7 @@ object FirebaseController {
                             if (dataSnapshot.value != null) { //por testear en consola
                                 if (dataSnapshot.value as Long? == 2L) {
                                     gamesDb!!.child(matchName).child("turn").setValue(myTurn)
-                                    activity.iniciarPartida(myTurn)
+                                    activity.iniciarPartida(true)
                                 }
                             }
                         }
@@ -103,7 +115,7 @@ object FirebaseController {
         val gameDb = gamesDb!!.child(matchName)
         gameDb.child("turn").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.value == myTurn.toLong()) {
+                if (dataSnapshot.value as Long == myTurn.toLong()) {
                     activity.setItsMyTurn(true)
                     println("es mi turno")
                 }

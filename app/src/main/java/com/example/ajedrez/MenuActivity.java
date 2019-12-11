@@ -39,10 +39,10 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
         user = FirebaseAuth.getInstance().getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance().getReference().child("uid-username");
-        inizialiteUserName();
+        initializeUserName();
     }
 
-    public void inizialiteUserName() {
+    public void initializeUserName() {
         if (user == null) {
             userName = null;
             mostrarPantalla();

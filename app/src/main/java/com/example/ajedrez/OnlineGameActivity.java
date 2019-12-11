@@ -39,6 +39,7 @@ public class OnlineGameActivity extends AppCompatActivity {
     private int unselectedGrayColor;
     private int selectedWhiteColor;
     private int selectedGrayColor;
+    private boolean itsMyTurn;
     private FirebaseController fbController;
 
     @Override
@@ -63,22 +64,23 @@ public class OnlineGameActivity extends AppCompatActivity {
                 boton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if(itsMyTurn){
                         int fila = indexI;
                         int columna = indexJ;
 
-                        if(posiciones[fila][columna] != null) {
+                        if (posiciones[fila][columna] != null) {
                             if (clickeado == null) {
-                                if(posiciones[fila][columna].getColor() == turnPlayer.getColor()) {
+                                if (posiciones[fila][columna].getColor() == turnPlayer.getColor()) {
                                     clickeado = new Pair(fila, columna);
                                     movPosibles = mostrarMovimientosPosibles();
-                                    if(movPosibles.isEmpty())
+                                    if (movPosibles.isEmpty())
                                         clickeado = null;
                                 }
-                            }else{
+                            } else {
                                 if (clickeado.first == fila && clickeado.second == columna) {
                                     clickeado = null;
                                     removerMovimientosPosibles(movPosibles, null);
-                                }else if(movimientoEsPosible(fila, columna)) {
+                                } else if (movimientoEsPosible(fila, columna)) {
                                     movimiento = new Pair(fila, columna);
                                     boolean resMov = realizarMovimiento(clickeado.first, clickeado.second, movimiento.first, movimiento.second);
                                     Pair<Integer, Integer> movHecho = null;
@@ -98,15 +100,15 @@ public class OnlineGameActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-                        }else {
-                            if(clickeado != null && movimientoEsPosible(fila, columna)) {
+                        } else {
+                            if (clickeado != null && movimientoEsPosible(fila, columna)) {
                                 movimiento = new Pair(fila, columna);
                                 boolean resMov = realizarMovimiento(clickeado.first, clickeado.second, movimiento.first, movimiento.second);
                                 Pair<Integer, Integer> movHecho = null;
-                                if(!resMov) {
+                                if (!resMov) {
                                     Toast.makeText(OnlineGameActivity.this, R.string.moveNotPossible, Toast.LENGTH_SHORT).show();
                                     movHecho = new Pair<>(movimiento.first, movimiento.second);
-                                }else {
+                                } else {
                                     terminarTurno();
                                 }
                                 removerMovimientosPosibles(movPosibles, movHecho);
@@ -114,7 +116,7 @@ public class OnlineGameActivity extends AppCompatActivity {
                                 clickeado = null;
                                 movimiento = null;
                                 checkMate = controller.checkMate();
-                                if(checkMate) {
+                                if (checkMate) {
                                     disableTablero();
                                 }
 
@@ -122,6 +124,7 @@ public class OnlineGameActivity extends AppCompatActivity {
                             }
                         }
                         setTextTurno();
+                    }
                     }
                 });
             }
@@ -131,11 +134,12 @@ public class OnlineGameActivity extends AppCompatActivity {
 
     public void leerMovimiento(Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> movimiento) {
         System.out.println(movimiento);
+        controller.moverFicha(movimiento.first.first, movimiento.first.second, movimiento.second.first, movimiento.second.first);
+        controller.cambiarTurno();
     }
 
     private void terminarTurno() {
         fbController.terminarTurno(OnlineGameActivity.this);
-        controller.cambiarTurno();
         turnPlayer = controller.getTurnPlayer();
         fbController.leerMovimiento(this);
     }
@@ -177,6 +181,10 @@ public class OnlineGameActivity extends AppCompatActivity {
         turnPlayer = tab.getPlayer1();
         posiciones = tab.getPosiciones();
         movPosibles = null;
+        itsMyTurn = getIntent().getBooleanExtra("itsMyTurn", false);
+        if(!itsMyTurn) {
+            fbController.leerMovimiento(this);
+        }
         setTextTurno();
         mostrarTablero();
         clickeado = null;
@@ -319,4 +327,9 @@ public class OnlineGameActivity extends AppCompatActivity {
     public void setItsMyTurn(boolean itsMyTurn) {
         this.itsMyTurn = itsMyTurn;
     }
+
+    public void endGame(View v) {
+        finish();
+    }
+
 }

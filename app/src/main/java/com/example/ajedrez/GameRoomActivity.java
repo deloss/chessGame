@@ -59,9 +59,9 @@ public class GameRoomActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
     }
 
-    public void iniciarPartida(int myTurn) {
+    public void iniciarPartida(boolean myTurn) {
         Intent intent = new Intent(this, OnlineGameActivity.class);
-        intent.putExtra("myTurn", myTurn);
+        intent.putExtra("itsMyTurn", myTurn);
         startActivity(intent);
     }
 }
