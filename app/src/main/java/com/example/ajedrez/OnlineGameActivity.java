@@ -145,6 +145,7 @@ public class OnlineGameActivity extends AppCompatActivity {
 
     private void terminarTurno() {
         fbController.terminarTurno(OnlineGameActivity.this);
+        controller.cambiarTurno();
         turnPlayer = controller.getTurnPlayer();
         fbController.leerMovimiento(this);
     }

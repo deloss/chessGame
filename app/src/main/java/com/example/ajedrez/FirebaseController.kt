@@ -77,6 +77,7 @@ object FirebaseController {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (dataSnapshot.value != null) { //por testear en consola
                                 if (dataSnapshot.value as Long? == 1L) {
+                                    gamesDb!!.child(matchName).child("turn").removeEventListener(this)
                                     activity.iniciarPartida(false)
                                 }
                             }
@@ -92,6 +93,7 @@ object FirebaseController {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (dataSnapshot.value != null) { //por testear en consola
                                 if (dataSnapshot.value as Long? == 2L) {
+                                    gamesDb!!.child(matchName).child("turn").removeEventListener(this)
                                     gamesDb!!.child(matchName).child("turn").setValue(myTurn)
                                     activity.iniciarPartida(true)
                                 }
