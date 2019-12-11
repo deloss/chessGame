@@ -134,8 +134,13 @@ public class OnlineGameActivity extends AppCompatActivity {
 
     public void leerMovimiento(Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> movimiento) {
         System.out.println(movimiento);
-        controller.moverFicha(movimiento.first.first, movimiento.first.second, movimiento.second.first, movimiento.second.first);
+        boolean ret = controller.moverFicha(movimiento.first.first, movimiento.first.second, movimiento.second.first, movimiento.second.second);
+        if(ret)
+            mostrarTablero();
+        else
+            System.out.println("Por algun motivo no se esta moviendo");
         controller.cambiarTurno();
+        turnPlayer = controller.getTurnPlayer();
     }
 
     private void terminarTurno() {
