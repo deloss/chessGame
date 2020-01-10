@@ -7,6 +7,12 @@ import com.example.ajedrez.R;
 import java.util.ArrayList;
 
 public class Controller {
+    private static final int ROOK = 0;
+    private static final int KNIGHT = 1;
+    private static final int BISHOP = 2;
+    private static final int QUEEN = 3;
+    private static final int PAWN = 4;
+    private static final int KING = 5;
     private static final Controller ourInstance = new Controller();
     private Tablero tablero;
     private Player turnPlayer;
@@ -113,6 +119,14 @@ public class Controller {
         player.piezaComida(pawn);
         posiciones[piece.getX()][piece.getY()] = piece;
         player.addPieza(piece);
+    }
+    
+    public void transformPiece(Player player, Piece oldPiece, Piece newPiece) {
+        Piece[][] posiciones = tablero.getPosiciones();
+        player.piezaComida(oldPiece);
+        newPiece.setPlayer(player);
+        posiciones[newPiece.getX()][newPiece.getY()] = newPiece;
+        player.addPieza(newPiece);
     }
 }
 
